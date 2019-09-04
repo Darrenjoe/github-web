@@ -21,6 +21,9 @@
   },
   "homepage": "https://github.com/Darrenjoe/github-web#readme",
   "dependencies": {
+    "@zeit/next-css": "^1.0.1",
+    "antd": "^3.13.6",
+    "babel-plugin-import": "^1.11.0",
     "ioredis": "^4.6.2",
     "koa": "^2.7.0",
     "koa-router": "^7.4.0",
