@@ -4,10 +4,6 @@ const initialState = {
   count: 0
 };
 
-{
-    type:
-}
-
 const ADD = "ADD";
 
 function reducer(state = initialState, action) {
