@@ -1,8 +1,25 @@
 import { withRouter } from "next/router";
+import Link from "next/link";
 
-const A = ({ router }) => <span>a {router.query.id}</span>;
+const A = ({ router, name }) => (
+  <>
+    <Link>
+      <a className="link">
+        a {router.query.id} {name}
+      </a>
+    </Link>
+    <style jsx>{`
+      a {
+        color: blue;
+      }
+      .link {
+        color: red;
+      }
+    `}</style>
+  </>
+);
 
-A.getInitialProps = async () => {
+A.getInitialProps = async ctx => {
   const promise = new Promise(resolve => {
     setTimeout(() => {
       resolve({

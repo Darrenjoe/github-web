@@ -5,10 +5,10 @@ import Layout from "../components/Layout";
 import "antd/dist/antd.css";
 
 class MyApp extends App {
-  static async getInitialProps({ Component, ctx }) {
-    let pageProps = {};
+  static async getInitialProps({ Component }) {
+    let pageProps;
     if (Component.getInitialProps) {
-      pageProps = await Component.getInitialProps(ctx);
+      pageProps = await Component.getInitialProps();
     }
     return {
       pageProps
@@ -17,7 +17,7 @@ class MyApp extends App {
 
   render() {
     const { Component, pageProps } = this.props;
-
+    console.log(Component);
     return (
       <Container>
         <Layout>
