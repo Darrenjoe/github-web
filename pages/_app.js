@@ -1,10 +1,12 @@
 import App, { Container } from "next/app";
-
 import Layout from "../components/Layout";
-
 import "antd/dist/antd.css";
+import MyContext from "../lib/my-context";
 
 class MyApp extends App {
+  state = {
+    context: "value"
+  };
   static async getInitialProps({ Component, ctx }) {
     let pageProps = {};
     if (Component.getInitialProps) {
@@ -21,7 +23,9 @@ class MyApp extends App {
     return (
       <Container>
         <Layout>
-          <Component {...pageProps}></Component>
+          <MyContext.Provider value={this.state.context}>
+            <Component {...pageProps}></Component>
+          </MyContext.Provider>
         </Layout>
       </Container>
     );

@@ -1,4 +1,11 @@
-import React, { useState, useReducer, useLayoutEffect, useEffect } from "react";
+import React, {
+  useState,
+  useReducer,
+  useLayoutEffect,
+  useContext,
+  useEffect
+} from "react";
+import myContext from "../lib/my-context";
 
 class MyCount extends React.Component {
   state = {
@@ -37,7 +44,7 @@ function MyCountFunc() {
   // const [count, setCount] = useState(0);
   const [count, dispatchCount] = useReducer(countReducer, 0);
   const [name, setName] = useState("Darren");
-
+  const context = useContext(myContext);
   // useEffect(() => {
   //   const inerval = setInterval(() => {
   //     // setCount(c => c + 1);
@@ -62,6 +69,7 @@ function MyCountFunc() {
     <div>
       <input value={name} onChange={e => setName(e.target.value)} />
       <button onClick={() => dispatchCount({ type: "add" })}>{count}</button>
+      <p>{context}</p>
     </div>
   );
 }
