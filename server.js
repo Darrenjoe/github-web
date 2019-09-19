@@ -1,7 +1,7 @@
 const Koa = require("koa");
 const Router = require("koa-router");
 const next = require("next");
-const seesion = require("koa-session");
+const session = require("koa-session");
 const Redis = require("ioredis");
 
 const RedisSessionStore = require("./server/session-store");

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 class MyCount extends React.Component {
   state = {
@@ -22,4 +22,15 @@ class MyCount extends React.Component {
   }
 }
 
-export default MyCount;
+function MyCountFunc() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const inerval = setInterval(() => {
+      setCount(c => c + 1);
+    }, 1000);
+  }, []);
+  return <span>{count}</span>;
+}
+
+export default MyCountFunc;

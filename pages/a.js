@@ -1,8 +1,13 @@
 import { withRouter } from "next/router";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 
-const A = ({ router, name }) => (
+const Comp = dynamic(import("../components/comp"));
+
+const A = ({ router, name, time }) => (
   <>
+    <p>{time}</p>
+    <Comp />
     <Link>
       <a className="link">
         a {router.query.id} {name}
@@ -20,10 +25,12 @@ const A = ({ router, name }) => (
 );
 
 A.getInitialProps = async ctx => {
+  const moment = await import("moment");
   const promise = new Promise(resolve => {
     setTimeout(() => {
       resolve({
-        name: "jokcy"
+        name: "jokcy",
+        time: moment.default(Date.now() - 60 * 1000).format()
       });
     }, 1000);
   });
