@@ -9,7 +9,7 @@ const A = ({ router, name, time }) => (
     <p>{time}</p>
     <Comp />
     <Link>
-      <a className="link">
+      <a className="link ">
         a {router.query.id} {name}
       </a>
     </Link>
