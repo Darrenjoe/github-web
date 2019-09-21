@@ -1,5 +1,6 @@
-import { createStore, combineReducers } from "redux";
-
+import { createStore, combineReducers, applyMiddleware } from "redux";
+import ReduxThunk from "redux-thunk";
+import { composeWithDevTools } from "redux-devtools-extension";
 const initialState = {
   count: 0
 };
@@ -36,10 +37,14 @@ const allReducer = combineReducers({
   user: userReducer
 });
 
-const store = createStore(allReducer, {
-  counter: initialState,
-  user: userInitialState
-});
+const store = createStore(
+  allReducer,
+  {
+    counter: initialState,
+    user: userInitialState
+  },
+  composeWithDevTools(applyMiddleware(ReduxThunk))
+);
 
 store.dispatch({ type: ADD });
 store.subscribe(() => {

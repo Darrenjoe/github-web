@@ -1,6 +1,7 @@
 import Router from "next/router";
 import store from "../store/store";
-export default () => {
+import { connect } from "react-redux";
+const Index = ({ counter, username, rename, add }) => {
   function gotoTestB() {
     Router.push(
       {
@@ -14,7 +15,25 @@ export default () => {
   }
   return (
     <>
-      <span>Index</span>
+      <span>Counter: {counter}</span>
+      <a>name: {username}</a>
+      <input value={username} onChange={e => rename(e.target.value)} />
+      <button onClick={() => add(counter)}>Do Add</button>
     </>
   );
 };
+
+export default connect(
+  function mapStateToProps(state) {
+    return {
+      counter: state.counter.count,
+      username: state.user.username
+    };
+  },
+  function mapDispatchToProps(dispatch) {
+    return {
+      add: num => dispatch({ type: "ADD", num }),
+      rename: name => dispatch({ type: "UPDATE_USERNAME", name })
+    };
+  }
+)(Index);
