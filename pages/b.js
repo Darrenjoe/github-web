@@ -1,34 +1,14 @@
 import React, {
   useState,
   useReducer,
-  useLayoutEffect,
   useContext,
+  useLayoutEffect,
   useEffect,
-  useRef
+  useRef,
+  memo,
+  useMemo,
+  useCallback
 } from "react";
-import myContext from "../lib/my-context";
-
-class MyCount extends React.Component {
-  state = {
-    count: 0
-  };
-
-  componentDidMount() {
-    this.inerval = setInterval(() => {
-      this.setState({
-        count: this.state.count + 1
-      });
-    }, 1000);
-  }
-  componentWillUnmount() {
-    if (this.inerval) {
-      clearInterval(this.inerval);
-    }
-  }
-  render() {
-    return <span>{this.state.count}</span>;
-  }
-}
 
 function countReducer(state, action) {
   switch (action.type) {
@@ -42,42 +22,34 @@ function countReducer(state, action) {
 }
 
 function MyCountFunc() {
-  // const [count, setCount] = useState(0);
   const [count, dispatchCount] = useReducer(countReducer, 0);
   const [name, setName] = useState("Darren");
-  const context = useContext(myContext);
-  const inputRef = useRef();
-  // useEffect(() => {
-  //   const inerval = setInterval(() => {
-  //     // setCount(c => c + 1);
-  //     disppatchCount({ type: "minus" });
-  //   }, 1000);
-  //   return () => clearInterval(inerval);
-  // }, []);
-  useEffect(() => {
-    console.log(inputRef);
-    return () => {
-      console.log("effct deteched");
-    };
-  }, []);
-  // useLayoutEffect 会在
-  useLayoutEffect(() => {
-    console.log("layoutEffct invoked");
-    return () => {
-      console.log("layoutEffct deteched");
-    };
-  }, [count]);
+  const config = useMemo(
+    () => ({
+      text: `count is ${count}`,
+      color: count > 3 ? "red" : "blue"
+    }),
+    [count]
+  );
+  const handleButtonClick = useCallback(
+    () => dispatchCount({ type: "add" }),
+    []
+  );
   return (
     <div>
-      <input
-        ref={inputRef}
-        value={name}
-        onChange={e => setName(e.target.value)}
-      />
-      <button onClick={() => dispatchCount({ type: "add" })}>{count}</button>
-      <p>{context}</p>
+      <input value={name} onChange={e => setName(e.target.value)} />
+      <Child config={config} onButtonClick={handleButtonClick}></Child>
     </div>
   );
 }
+
+const Child = memo(function Child({ onButtonClick, config }) {
+  console.log("child render");
+  return (
+    <button onClick={onButtonClick} style={{ color: config.color }}>
+      {config.text}
+    </button>
+  );
+});
 
 export default MyCountFunc;
