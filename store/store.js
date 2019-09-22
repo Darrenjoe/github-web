@@ -37,18 +37,30 @@ const allReducer = combineReducers({
   user: userReducer
 });
 
-const store = createStore(
-  allReducer,
-  {
-    counter: initialState,
-    user: userInitialState
-  },
-  composeWithDevTools(applyMiddleware(ReduxThunk))
-);
+export function add(num) {
+  return {
+    type: ADD,
+    num
+  };
+}
 
-store.dispatch({ type: ADD });
-store.subscribe(() => {
-  console.log(store.getState());
-});
-store.dispatch({ type: ADD });
-export default store;
+// store.dispatch({ type: ADD });
+// store.subscribe(() => {
+//   console.log(store.getState());
+// });
+// store.dispatch({ type: ADD });
+export default function initializeStore(state) {
+  const store = createStore(
+    allReducer,
+    Object.assign(
+      {},
+      {
+        counter: initialState,
+        user: userInitialState
+      },
+      state
+    ),
+    composeWithDevTools(applyMiddleware(ReduxThunk))
+  );
+  return store;
+}
