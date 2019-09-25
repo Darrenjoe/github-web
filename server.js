@@ -13,6 +13,8 @@ const handle = app.getRequestHandler();
 // 创建Redis-Client
 const redis = new Redis();
 
+let index = 0;
+
 app.prepare().then(() => {
   const server = new Koa();
   const router = new Router();
@@ -35,7 +37,8 @@ app.prepare().then(() => {
   server.use(router.routes());
 
   server.use(async (ctx, next) => {
-    ctx.cookies.set("id", "userid:123sdas");
+    ctx.cookies.set("id", index);
+    index += 1;
     await handle(ctx.req, ctx.res);
     ctx.respond = false;
   });
