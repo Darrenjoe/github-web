@@ -13,11 +13,14 @@ const handle = app.getRequestHandler();
 // 创建Redis-Client
 const redis = new Redis();
 
-let index = 0;
-
 app.prepare().then(() => {
   const server = new Koa();
   const router = new Router();
+
+  server.use(async (ctx, next) => {
+    console.log(ctx.cookies.get("id"));
+    await next();
+  });
 
   server.keys = ["Darren develop Github App"];
   const SESSION_CONFIG = {
@@ -37,8 +40,7 @@ app.prepare().then(() => {
   server.use(router.routes());
 
   server.use(async (ctx, next) => {
-    ctx.cookies.set("id", index);
-    index += 1;
+    ctx.cookies.set("id", "userId:xxx");
     await handle(ctx.req, ctx.res);
     ctx.respond = false;
   });
