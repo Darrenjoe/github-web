@@ -19,6 +19,11 @@ app.prepare().then(() => {
 
   server.use(async (ctx, next) => {
     console.log(ctx.cookies.get("id"));
+    ctx.session = ctx.session || {};
+    ctx.session.user = {
+      username: "Darren",
+      age: 23
+    };
     await next();
   });
 
