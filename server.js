@@ -80,7 +80,7 @@ app.prepare().then(() => {
   server.use(router.routes());
 
   server.use(async (ctx, next) => {
-    ctx.cookies.set("id", "userId:xxx");
+    // ctx.cookies.set("id", "userId:xxx");
     await handle(ctx.req, ctx.res);
     ctx.respond = false;
   });
