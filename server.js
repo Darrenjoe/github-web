@@ -53,12 +53,13 @@ app.prepare().then(() => {
     // });
     // ctx.respond = false;
     const user = ctx.session.userInfo;
-    if (user) {
+    if (!user) {
       ctx.status = 401;
       ctx.body = "Need Login";
+    } else {
+      ctx.body = user;
+      ctx.set("Content-Type", "application/json");
     }
-    ctx.body = user;
-    ctx.set("Content-Type", "application/josn");
   });
 
   server.use(router.routes());
