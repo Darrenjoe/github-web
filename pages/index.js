@@ -1,6 +1,10 @@
 import Router from "next/router";
 import { connect } from "react-redux";
 import { add } from "../store/store";
+import getConfig from "next/config";
+
+const { publicRunTimeConfig } = getConfig();
+
 const Index = ({ counter, username, rename, add }) => {
   function gotoTestB() {
     Router.push(
@@ -19,6 +23,7 @@ const Index = ({ counter, username, rename, add }) => {
       <a>name: {username}</a>
       <input value={username} onChange={e => rename(e.target.value)} />
       <button onClick={() => add(counter)}>Do Add</button>
+      <a href={publicRunTimeConfig.OAUTH_URL}>去登录</a>
     </>
   );
 };
