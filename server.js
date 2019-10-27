@@ -4,6 +4,8 @@ const next = require("next");
 const session = require("koa-session");
 const Redis = require("ioredis");
 
+const auth = require("./server/auth");
+
 const RedisSessionStore = require("./server/session-store");
 
 const dev = process.env.NODE_ENV != "production";
@@ -24,27 +26,8 @@ app.prepare().then(() => {
   };
   server.use(session(SESSION_CONFIG, server));
 
-  // server.use(async (ctx, next) => {
-  //   console.log(ctx.cookies.get("id"));
-  //   // 获取用户数据
-  //   // 比如调用 `model/getUserById(id)`
-  //   // ctx.session = ctx.session || {};
-  //   // ctx.session.user = {
-  //   //   username: "Darren",
-  //   //   age: 23
-  //   // };
-
-  //   if (!ctx.session.user) {
-  //     ctx.session.user = {
-  //       name: "darren",
-  //       age: 18
-  //     };
-  //   } else {
-  //     console.log("session is:", ctx.session);
-  //   }
-
-  //   await next();
-  // });
+  // 配置处理github OAuth的登录
+  auth(server);
 
   server.use(async (ctx, next) => {
     if (ctx.cookies.get("jid")) {
@@ -62,19 +45,20 @@ app.prepare().then(() => {
     ctx.respond = false;
   });
 
-  router.get("/set/user", async ctx => {
+  router.get("/api/user/info", async ctx => {
     // const id = ctx.params.id;
     // await handle(ctx.req, ctx.res, {
     //   pathname: "/a",
     //   query: { id }
     // });
-    ctx.respond = false;
-
-    ctx.session.user = {
-      username: "Darren",
-      age: 23
-    };
-    ctx.body = "set session success";
+    // ctx.respond = false;
+    const user = ctx.session.userInfo;
+    if (user) {
+      ctx.status = 401;
+      ctx.body = "Need Login";
+    }
+    ctx.body = user;
+    ctx.set("Content-Type", "application/josn");
   });
 
   server.use(router.routes());
