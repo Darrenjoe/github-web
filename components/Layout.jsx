@@ -1,9 +1,11 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, cloneElement } from "react";
 
 import Link from "next/link";
 import { Button, Layout, Icon, Input, Avatar } from "antd";
 
 const { Header, Content, Footer } = Layout;
+
+import Container from "./Container";
 
 const githubIconStyle = {
   color: "white",
@@ -29,7 +31,7 @@ export default ({ children }) => {
   return (
     <Layout>
       <Header>
-        <div className="header-inner">
+        <Container renderer={<div className="header-inner" />}>
           <div className="header-left">
             <div className="logo">
               <Icon type="github" style={githubIconStyle} />
@@ -48,9 +50,11 @@ export default ({ children }) => {
               <Avatar size={40} icon="user" />
             </div>
           </div>
-        </div>
+        </Container>
       </Header>
-      <Content>{children}</Content>
+      <Content>
+        <Container>{children}</Container>
+      </Content>
       <Footer style={footerStyle}>
         Develop by Darren @<a href="491361994@qq.com">Darren@qq.com</a>
       </Footer>
@@ -70,6 +74,10 @@ export default ({ children }) => {
         }
         .ant-layout {
           height: 100%;
+        }
+        .ant-layout-header {
+          padding-left: 0;
+          padding-right: 0;
         }
       `}</style>
     </Layout>
