@@ -66,6 +66,7 @@ app.prepare().then(() => {
 
   server.use(async (ctx, next) => {
     // ctx.cookies.set("id", "userId:xxx");
+    ctx.req.session = ctx.session;
     await handle(ctx.req, ctx.res);
     ctx.respond = false;
   });
