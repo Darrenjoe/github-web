@@ -7,6 +7,13 @@ const { Header, Content, Footer } = Layout;
 
 import Container from "./Container";
 
+// import getConfig from "next/config";
+import config from "../config";
+// const { publicRunTimeConfig } = getConfig();
+const GITHUB_OAUTH_URL = "https://github.com/login/oauth/authorize";
+const SCOPE = "user";
+const OAUTH_URL = `${GITHUB_OAUTH_URL}?client_id=${config.github.client_id}&scope=${SCOPE}`;
+
 const githubIconStyle = {
   color: "white",
   fontSize: 40,
@@ -47,7 +54,9 @@ export default ({ children }) => {
           </div>
           <div className="header-right">
             <div className="user">
-              <Avatar size={40} icon="user" />
+              <a href={OAUTH_URL}>
+                <Avatar size={40} icon="user" />
+              </a>
             </div>
           </div>
         </Container>
