@@ -1,7 +1,17 @@
 import { useState, useCallback, cloneElement } from "react";
+import { connect } from "react-redux";
 
 import Link from "next/link";
-import { Button, Layout, Icon, Input, Avatar } from "antd";
+import {
+  Button,
+  Layout,
+  Icon,
+  Input,
+  Avatar,
+  Tooltip,
+  Dropdown,
+  Menu
+} from "antd";
 
 const { Header, Content, Footer } = Layout;
 
@@ -26,7 +36,7 @@ const footerStyle = {
   textAlign: "center"
 };
 
-export default ({ children }) => {
+function MyLayout({ children, user }) {
   const [search, setSearch] = useState("");
   const handleSearchChange = useCallback(
     event => {
@@ -35,6 +45,13 @@ export default ({ children }) => {
     [setSearch]
   );
   const handleOnSearch = useCallback(() => {});
+  const userDropDown = (
+    <Menu>
+      <Menu.Item>
+        <a href="javascript:void(0)">登 出</a>
+      </Menu.Item>
+    </Menu>
+  );
   return (
     <Layout>
       <Header>
@@ -54,9 +71,19 @@ export default ({ children }) => {
           </div>
           <div className="header-right">
             <div className="user">
-              <a href={OAUTH_URL}>
-                <Avatar size={40} icon="user" />
-              </a>
+              {user && user.id ? (
+                <Dropdown overlay={userDropDown}>
+                  <a href="/">
+                    <Avatar size={40} src={user.avatar_url} />
+                  </a>
+                </Dropdown>
+              ) : (
+                <Tooltip title="点击登录">
+                  <a href={OAUTH_URL}>
+                    <Avatar size={40} icon="user" />
+                  </a>
+                </Tooltip>
+              )}
             </div>
           </div>
         </Container>
@@ -91,4 +118,10 @@ export default ({ children }) => {
       `}</style>
     </Layout>
   );
-};
+}
+
+export default connect(function mapState(state) {
+  return {
+    user: state.user
+  };
+})(MyLayout);
