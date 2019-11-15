@@ -4,6 +4,9 @@ const config = require("../config");
 
 const { client_id, client_secret, request_token_url } = config.github;
 
+var window = window || global;
+var document = document || (window.document = {});
+
 module.exports = server => {
   server.use(async (ctx, next) => {
     if (ctx.path === "/auth") {

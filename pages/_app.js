@@ -26,11 +26,11 @@ class MyApp extends App {
 
     return (
       <Container>
-        <Provider store={reduxStore}>
-          <Layout>
+        <Layout>
+          <Provider store={reduxStore}>
             <Component {...pageProps}></Component>
-          </Layout>
-        </Provider>
+          </Provider>
+        </Layout>
       </Container>
     );
   }

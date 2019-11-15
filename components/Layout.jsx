@@ -36,7 +36,7 @@ const footerStyle = {
   textAlign: "center"
 };
 
-function MyLayout({ children, user }) {
+function MyLayout({ children, user, logout }) {
   const [search, setSearch] = useState("");
   const handleSearchChange = useCallback(
     event => {
@@ -44,7 +44,9 @@ function MyLayout({ children, user }) {
     },
     [setSearch]
   );
-  const handleOnSearch = useCallback(() => {});
+
+  const handleOnSearch = useCallback(() => {}, []);
+
   const userDropDown = (
     <Menu>
       <Menu.Item>
@@ -52,6 +54,7 @@ function MyLayout({ children, user }) {
       </Menu.Item>
     </Menu>
   );
+
   return (
     <Layout>
       <Header>
