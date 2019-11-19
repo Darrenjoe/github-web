@@ -29,12 +29,12 @@ app.prepare().then(() => {
   // 配置处理github OAuth的登录
   auth(server);
 
-  // server.use(async (ctx, next) => {
-  //   if (ctx.cookies.get("jid")) {
-  //     ctx.session = {};
-  //   }
-  //   await next();
-  // });
+  server.use(async (ctx, next) => {
+    if (ctx.cookies.get("jid")) {
+      ctx.session = {};
+    }
+    await next();
+  });
 
   router.get("/a/:id", async ctx => {
     const id = ctx.params.id;
