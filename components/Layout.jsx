@@ -20,6 +20,9 @@ import config from "../config";
 // const { publicRunTimeConfig } = getConfig();
 import { connect } from "react-redux";
 import { logout } from "../store/store";
+import axios from "axios";
+import { withRouter } from "next/router";
+
 const GITHUB_OAUTH_URL = "https://github.com/login/oauth/authorize";
 const SCOPE = "user";
 const OAUTH_URL = `${GITHUB_OAUTH_URL}?client_id=${config.github.client_id}&scope=${SCOPE}`;
@@ -36,7 +39,7 @@ const footerStyle = {
   textAlign: "center"
 };
 
-function MyLayout({ children, user, logout }) {
+function MyLayout({ children, user, logout, router }) {
   const [search, setSearch] = useState("");
   const handleSearchChange = useCallback(
     event => {
@@ -44,10 +47,30 @@ function MyLayout({ children, user, logout }) {
     },
     [setSearch]
   );
-  const handleOnSearch = useCallback(() => {});
+  const handleOnSearch = useCallback(() => {}, []);
 
-  const handleLogout = useCallback(() => {
-    logout();
+  const handleLogout = useCallback(
+    e => {
+      e.preventDefault();
+      logout();
+    },
+    [logout]
+  );
+
+  const handleGotoOAuth = useCallback(e => {
+    e.preventDefault();
+    axios
+      .get(`/prepare-auth?url=${router.asPath}`)
+      .then(resp => {
+        if (resp.status === 200) {
+          location.href = OAUTH_URL;
+        } else {
+          console.log("prepare auth failed", resp);
+        }
+      })
+      .catch(err => {
+        console.log("prepare auth failed", err);
+      });
   }, []);
 
   return (
@@ -70,12 +93,12 @@ function MyLayout({ children, user, logout }) {
           <div className="header-right">
             <div className="user">
               {user && user.id ? (
-                <a href="javascript: viod(0)" onClick={handleLogout}>
+                <a href="/" onClick={handleLogout}>
                   <Avatar size={40} src={user.avatar_url} />
                 </a>
               ) : (
                 <Tooltip title="点击登录">
-                  <a href={OAUTH_URL}>
+                  <a href={OAUTH_URL} onClick={handleGotoOAuth}>
                     <Avatar size={40} icon="user" />
                   </a>
                 </Tooltip>
@@ -127,4 +150,4 @@ export default connect(
       logout: () => dispatch(logout())
     };
   }
-)(MyLayout);
+)(withRouter(MyLayout));
