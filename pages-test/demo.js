@@ -19,7 +19,6 @@ import Container from "./Container";
 import config from "../config";
 // const { publicRunTimeConfig } = getConfig();
 import { connect } from "react-redux";
-import { logout } from "../store/store";
 const GITHUB_OAUTH_URL = "https://github.com/login/oauth/authorize";
 const SCOPE = "user";
 const OAUTH_URL = `${GITHUB_OAUTH_URL}?client_id=${config.github.client_id}&scope=${SCOPE}`;
@@ -36,7 +35,7 @@ const footerStyle = {
   textAlign: "center"
 };
 
-function MyLayout({ children, user, logout }) {
+function MyLayout({ children, user }) {
   const [search, setSearch] = useState("");
   const handleSearchChange = useCallback(
     event => {
@@ -45,10 +44,13 @@ function MyLayout({ children, user, logout }) {
     [setSearch]
   );
   const handleOnSearch = useCallback(() => {});
-
-  const handleLogout = useCallback(() => {
-    logout();
-  }, []);
+  const userDropDown = (
+    <Menu>
+      <Menu.Item>
+        <a href="javascript: viod(0)">登 出</a>
+      </Menu.Item>
+    </Menu>
+  );
 
   return (
     <Layout>
@@ -70,9 +72,11 @@ function MyLayout({ children, user, logout }) {
           <div className="header-right">
             <div className="user">
               {user && user.id ? (
-                <a href="javascript: viod(0)" onClick={handleLogout}>
-                  <Avatar size={40} src={user.avatar_url} />
-                </a>
+                <Dropdown overlay={userDropDown}>
+                  <a href="/">
+                    <Avatar size={40} src={user.avatar_url} />
+                  </a>
+                </Dropdown>
               ) : (
                 <Tooltip title="点击登录">
                   <a href={OAUTH_URL}>
@@ -116,15 +120,8 @@ function MyLayout({ children, user, logout }) {
   );
 }
 
-export default connect(
-  function mapState(state) {
-    return {
-      user: state.user
-    };
-  },
-  function mapReducer(dispatch) {
-    return {
-      logout: () => dispatch(logout())
-    };
-  }
-)(MyLayout);
+export default connect(function mapState(state) {
+  return {
+    user: state.user
+  };
+})(MyLayout);
