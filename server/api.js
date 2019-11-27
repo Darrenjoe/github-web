@@ -8,21 +8,21 @@ module.exports = server => {
     const method = ctx.method;
     if (path.startsWith("/github/")) {
       const session = ctx.session;
-      const githubAuth = (session && session.githubAuth) || {};
+      const githubAuth = session && session.githubAuth;
       const headers = {};
       if (githubAuth && githubAuth.access_token) {
         headers[
           "Authorization"
         ] = `${githubAuth.token_type} ${githubAuth.access_token}`;
       }
-      const reslut = await requestGithub(
+      const result = await requestGithub(
         method,
         ctx.url.replace("/github/", "/"),
         {},
         headers
       );
-      ctx.status = reslut.status;
-      ctx.body = reslut.data;
+      ctx.status = result.status;
+      ctx.body = result.data;
     } else {
       await next();
     }
