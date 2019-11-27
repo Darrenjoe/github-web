@@ -31,12 +31,12 @@ class MyApp extends App {
     Router.events.on("routeChangeStart", this.startLoading);
     Router.events.on("routeChangeComplete", this.stopLoading);
     Router.events.on("routeChangeError", this.stopLoading);
-    axios.get("/github/search/repositories?q=react").then(resp => {
-      console.log(resp);
-    });
+    // axios.get("/github/search/repositories?q=react").then(resp => {
+    //   console.log(resp);
+    // });
   }
 
-  componentWillMount() {
+  componentWillUnmount() {
     Router.events.off("routeChangeStart", this.startLoading);
     Router.events.off("routeChangeComplete", this.stopLoading);
     Router.events.off("routeChangeError", this.stopLoading);
