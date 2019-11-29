@@ -46,11 +46,9 @@ function Index({ userRepos, userStaredRepos, user }) {
         </p>
       </div>
       <div className="user-repos">
-        <div className="user-repos">
-          {userRepos.map(repo => (
-            <Repo repo={repo} />
-          ))}
-        </div>
+        {userRepos.map(repo => (
+          <Repo repo={repo} />
+        ))}
       </div>
       <style jsx>{`
         .root {
@@ -81,6 +79,9 @@ function Index({ userRepos, userStaredRepos, user }) {
         .avatar {
           width: 100%;
           border-radius: 5px;
+        }
+        .user-repos {
+          flex-grow: 1;
         }
       `}</style>
     </div>
