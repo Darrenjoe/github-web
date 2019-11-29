@@ -2,6 +2,8 @@ import { Button, Icon } from "antd";
 import config from "../config";
 import { connect } from "react-redux";
 
+import Repo from "../components/Repo";
+
 const GITHUB_OAUTH_URL = "https://github.com/login/oauth/authorize";
 const SCOPE = "user";
 const OAUTH_URL = `${GITHUB_OAUTH_URL}?client_id=${config.github.client_id}&scope=${SCOPE}`;
@@ -39,12 +41,16 @@ function Index({ userRepos, userStaredRepos, user }) {
         <span className="name">{user.name}</span>
         <span className="bio">{user.bio}</span>
         <p className="email">
-          <Icon type="amil" style={{ marginRight: 10 }} />
+          <Icon type="mail" style={{ marginRight: 10 }} />
           <a href={`mailto:${user.email}`}>{user.email}</a>
         </p>
       </div>
       <div className="user-repos">
-        <p>User Repos</p>
+        <div className="user-repos">
+          {userRepos.map(repo => (
+            <Repo repo={repo} />
+          ))}
+        </div>
       </div>
       <style jsx>{`
         .root {
