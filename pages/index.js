@@ -1,6 +1,9 @@
-import { Button, Icon } from "antd";
+import { useEffect } from "react";
+import { Button, Icon, Tabs } from "antd";
 import config from "../config";
 import { connect } from "react-redux";
+import Router, { withRouter } from "next/router";
+import LRU from "lru-cache";
 
 import Repo from "../components/Repo";
 
@@ -8,11 +11,36 @@ const GITHUB_OAUTH_URL = "https://github.com/login/oauth/authorize";
 const SCOPE = "user";
 const OAUTH_URL = `${GITHUB_OAUTH_URL}?client_id=${config.github.client_id}&scope=${SCOPE}`;
 
+const cache = new LRU({
+  maxAge: 1000 * 60 * 10
+});
+
 const api = require("../lib/api");
 
-function Index({ userRepos, userStaredRepos, user }) {
-  console.log(userRepos);
-  console.log(userStaredRepos);
+let cachedUserRepos, cachedUserStaredRepos;
+
+function Index({ userRepos, userStaredRepos, user, router }) {
+  // console.log(userRepos);
+  // console.log(userStaredRepos);
+
+  const tabKey = router.query.key || "1";
+
+  const handleTabChange = activeKey => {
+    Router.push(`/?key=${activeKey}`);
+  };
+
+  useEffect(() => {
+    if (!isServer) {
+      // cachedUserRepos = userRepos;
+      // cachedUserStaredRepos = userStaredRepos;
+      if (userRepos) {
+        cache.set("userRepos", userRepos);
+      }
+      if (userStaredRepos) {
+        cache.set("userStaredRepos", userStaredRepos);
+      }
+    }
+  }, [userRepos, userStaredRepos]);
 
   if (!user || !user.id) {
     return (
@@ -46,9 +74,18 @@ function Index({ userRepos, userStaredRepos, user }) {
         </p>
       </div>
       <div className="user-repos">
-        {userRepos.map(repo => (
-          <Repo repo={repo} />
-        ))}
+        <Tabs activeKey={tabKey} animated={false} onChange={handleTabChange}>
+          <Tabs.TabPane tab="你的仓库" key="1">
+            {userRepos.map(repo => (
+              <Repo key={repo.id} repo={repo} />
+            ))}
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="你关注的仓库" key="2">
+            {userStaredRepos.map(repo => (
+              <Repo key={repo.id} repo={repo} />
+            ))}
+          </Tabs.TabPane>
+        </Tabs>
       </div>
       <style jsx>{`
         .root {
@@ -87,7 +124,7 @@ function Index({ userRepos, userStaredRepos, user }) {
     </div>
   );
 }
-
+const isServer = typeof window === "undefined";
 Index.getInitialProps = async ({ ctx, reduxStore }) => {
   const user = reduxStore.getState().user;
   if (!user || !user.id) {
@@ -95,6 +132,16 @@ Index.getInitialProps = async ({ ctx, reduxStore }) => {
       isLogin: false
     };
   }
+
+  if (!isServer) {
+    if (cache.get("userRepos") && cache.get("userStaredRepos")) {
+      return {
+        userRepos: cache.get("userRepos"),
+        userStaredRepos: cache.get("userStaredRepos")
+      };
+    }
+  }
+
   const userRepos = await api.request(
     {
       url: "/user/repos"
@@ -117,8 +164,10 @@ Index.getInitialProps = async ({ ctx, reduxStore }) => {
     userStaredRepos: userStaredRepos.data
   };
 };
-export default connect(function mapState(state) {
-  return {
-    user: state.user
-  };
-})(Index);
+export default withRouter(
+  connect(function mapState(state) {
+    return {
+      user: state.user
+    };
+  })(Index)
+);
