@@ -11,9 +11,9 @@ const GITHUB_OAUTH_URL = "https://github.com/login/oauth/authorize";
 const SCOPE = "user";
 const OAUTH_URL = `${GITHUB_OAUTH_URL}?client_id=${config.github.client_id}&scope=${SCOPE}`;
 
-const cache = new LRU({
-  maxAge: 1000 * 60 * 10
-});
+// const cache = new LRU({
+//   maxAge: 1000 * 60 * 10
+// });
 
 const api = require("../lib/api");
 
@@ -31,14 +31,18 @@ function Index({ userRepos, userStaredRepos, user, router }) {
 
   useEffect(() => {
     if (!isServer) {
-      // cachedUserRepos = userRepos;
-      // cachedUserStaredRepos = userStaredRepos;
-      if (userRepos) {
-        cache.set("userRepos", userRepos);
-      }
-      if (userStaredRepos) {
-        cache.set("userStaredRepos", userStaredRepos);
-      }
+      cachedUserRepos = userRepos;
+      cachedUserStaredRepos = userStaredRepos;
+      // if (userRepos) {
+      //   cache.set("userRepos", userRepos);
+      // }
+      // if (userStaredRepos) {
+      //   cache.set("userStaredRepos", userStaredRepos);
+      // }
+      const timeout = setTimeout(() => {
+        cachedUserRepos = null;
+        cachedUserStaredRepos = null;
+      }, 1000 * 60 * 10);
     }
   }, [userRepos, userStaredRepos]);
 
@@ -134,10 +138,17 @@ Index.getInitialProps = async ({ ctx, reduxStore }) => {
   }
 
   if (!isServer) {
-    if (cache.get("userRepos") && cache.get("userStaredRepos")) {
+    // if (cache.get("userRepos") && cache.get("userStaredRepos")) {
+    //   return {
+    //     userRepos: cache.get("userRepos"),
+    //     userStaredRepos: cache.get("userStaredRepos")
+    //   };
+    // }
+
+    if (cachedUserRepos && cachedUserStaredRepos) {
       return {
-        userRepos: cache.get("userRepos"),
-        userStaredRepos: cache.get("userStaredRepos")
+        userRepos: cachedUserRepos,
+        userStaredRepos: cachedUserStaredRepos
       };
     }
   }
