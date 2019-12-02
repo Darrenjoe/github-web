@@ -1,7 +1,9 @@
+import { useCallback, memo } from "react";
 import { withRouter } from "next/router";
-import { Row, Col, List } from "antd";
+import { Row, Col } from "antd";
 import Link from "next/link";
 import Router from "next/router";
+import Repo from "../components/Repo";
 
 const api = require("../lib/api");
 
@@ -42,33 +44,24 @@ const selectedItemStyle = {
   borderLeft: "2px solid #e36209",
   fontWeight: 100
 };
+
+function noop() {}
+
+const FilterLink = memo(({ name, query, lang, sort, order }) => {
+  let queryString = `?query=${query}`;
+  if (lang) queryString += `&lang:${lang}`;
+  if (sort) queryString += `&sort=${sort}&order=${order || "desc"}`;
+
+  return (
+    <Link href={`/search${queryString}`}>
+      <a>{name}</a>
+    </Link>
+  );
+});
+
 function Search({ router, repos }) {
-  console.log(repos);
-  const { sort, order, lang, query } = router.query;
-
-  const handleLanguageChange = language => {
-    Router.push({
-      pathname: "/search",
-      query: {
-        query,
-        lang: language,
-        sort,
-        order
-      }
-    });
-  };
-
-  const handleSortChange = sort => {
-    Router.push({
-      pathname: "/search",
-      query: {
-        query,
-        lang,
-        sort: sort.value,
-        order: sort.order
-      }
-    });
-  };
+  const { ...querys } = router.query;
+  const { lang, sort, order, page } = router.query;
 
   return (
     <div className="root">
@@ -81,7 +74,11 @@ function Search({ router, repos }) {
                 const selected = lang === item;
                 return (
                   <li key={index} style={selected ? selectedItemStyle : null}>
-                    <a onClick={() => handleLanguageChange(item)}>{item}</a>
+                    {selected ? (
+                      <span>{item}</span>
+                    ) : (
+                      <FilterLink {...querys} lang={item} name={item} />
+                    )}
                   </li>
                 );
               })}
@@ -99,14 +96,43 @@ function Search({ router, repos }) {
                 }
                 return (
                   <li key={index} style={selected ? selectedItemStyle : null}>
-                    <a onClick={() => handleSortChange(item)}>{item.name}</a>
+                    {selected ? (
+                      <span>{item.name}</span>
+                    ) : (
+                      <FilterLink
+                        {...querys}
+                        sort={item.value}
+                        order={item.order}
+                        name={item.name}
+                      />
+                    )}
                   </li>
                 );
               })}
             </ul>
           </div>
         </Col>
+        <Col span={18}>
+          <h3 className="repos-title">{repos.total_count} 个仓库</h3>
+          {repos.items.map(repo => (
+            <Repo repo={repo} key={repo.id} />
+          ))}
+        </Col>
       </Row>
+      <style jsx>{`
+        .root {
+          padding: 20px 0;
+        }
+        .list-header {
+          font-weight: 800;
+          font-size: 16px;
+        }
+        .repos-title {
+          border-bottom: 1px solid #eee;
+          font-size: 24px;
+          line-height: 50px;
+        }
+      `}</style>
     </div>
   );
 }
