@@ -4,6 +4,7 @@ import config from "../config";
 import { connect } from "react-redux";
 import Router, { withRouter } from "next/router";
 import LRU from "lru-cache";
+import { cacheArray } from "../lib/repo-basic-cache";
 
 import Repo from "../components/Repo";
 
@@ -45,6 +46,13 @@ function Index({ userRepos, userStaredRepos, user, router }) {
       }, 1000 * 60 * 10);
     }
   }, [userRepos, userStaredRepos]);
+
+  useEffect(() => {
+    if (!isServer) {
+      cacheArray(userRepos);
+      cacheArray(userStaredRepos);
+    }
+  });
 
   if (!user || !user.id) {
     return (

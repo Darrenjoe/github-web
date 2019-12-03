@@ -1,11 +1,14 @@
-import { useCallback, memo } from "react";
+import { useCallback, memo, useEffect } from "react";
 import { withRouter } from "next/router";
 import { Row, Col } from "antd";
 import Link from "next/link";
 import Router from "next/router";
 import Repo from "../components/Repo";
+import { cacheArray } from "../lib/repo-basic-cache";
 
 const api = require("../lib/api");
+
+const isServer = typeof window === "undefined";
 
 const LANGUAGES = ["JavaScript", "HTML", "CSS", "TypeScript", "Java", "Rust"];
 const SORT_TYPES = [
@@ -62,6 +65,12 @@ const FilterLink = memo(({ name, query, lang, sort, order }) => {
 function Search({ router, repos }) {
   const { ...querys } = router.query;
   const { lang, sort, order, page } = router.query;
+
+  useEffect(() => {
+    if (!isServer) {
+      cacheArray(repos.items);
+    }
+  });
 
   return (
     <div className="root">
