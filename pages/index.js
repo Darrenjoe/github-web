@@ -47,12 +47,12 @@ function Index({ userRepos, userStaredRepos, user, router }) {
     }
   }, [userRepos, userStaredRepos]);
 
-  useEffect(() => {
-    if (!isServer) {
-      cacheArray(userRepos);
-      cacheArray(userStaredRepos);
-    }
-  });
+  // useEffect(() => {
+  //   if (!isServer) {
+  //     cacheArray(userRepos);
+  //     cacheArray(userStaredRepos);
+  //   }
+  // });
 
   if (!user || !user.id) {
     return (
