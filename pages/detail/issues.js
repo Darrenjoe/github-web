@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { getLastUpdated } from "../../lib/util";
 
 import withRepoBasic from "../../components/with-repo-basic";
+import SearchUser from "../../components/SearchUser";
 
 import api from "../../lib/api";
 
@@ -97,8 +98,15 @@ function IssuesItem({ issue }) {
 }
 
 function Issues({ issues }) {
+  const [creator, setCreator] = useState();
+
+  const handleCreatorChange = useCallback(value => {
+    setCreator(value);
+  }, []);
+
   return (
     <div className="root">
+      <SearchUser onChange={handleCreatorChange} value={creator} />
       <div className="issues">
         {issues.map(issue => (
           <IssuesItem issue={issue} key={issue.id} />
