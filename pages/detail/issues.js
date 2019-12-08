@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Avatar, Button, Select,Spin } from "antd";
 import dynamic from "next/dynamic";
 import { getLastUpdated } from "../../lib/util";
@@ -7,6 +7,8 @@ import withRepoBasic from "../../components/with-repo-basic";
 import SearchUser from "../../components/SearchUser";
 
 import api from "../../lib/api";
+
+const CACHE = {}
 
 const MdRender = dynamic(() => import("../../components/MarkDownRender"));
 
@@ -56,6 +58,9 @@ function IssuesItem({ issue }) {
         <div className="main-info">
           <h6>
             <span>{issue.title}</span>
+            {
+              issue.labels.map(label => (<Label label={label} key={label.id}/>))
+            }
           </h6>
           <p className="sub-info">
             <span>Updated at {getLastUpdated(issue.updated_at)}</span>
@@ -112,6 +117,26 @@ function makeQuery(creator, state, labels) {
   return `?${arr.join('&')}`
 }
 
+function Label({label}) {
+  return (
+    <>
+    <span className="label" style={{background: `#${label.color}`}}>{label}</span>
+    <style jsx>{`
+      .label {
+        display:inline-block;
+        line-height: 20px;
+        margin-left: 15px;
+        padding:3px 10px;
+        border-radius: 3px;
+        font-size: 14px;
+      }
+    `}</style>
+    </>
+  )
+}
+
+const isServer = typeof window ==='undefined'
+
 const Option = Select.Option;
 
 function Issues({ initialIssues, labels, owner, name }) {
@@ -120,6 +145,12 @@ function Issues({ initialIssues, labels, owner, name }) {
   const [label, setLabel] = useState([]);
   const [issues, setIssues] = useState(initialIssues);
   const [fetching,setFetching] = useState(false)
+
+  useEffect(()=> {
+    if (!isServer) {
+      CACHE[`${owner}/${name}`] = labels
+    
+  }, [owner, name, labels])
 
   const handleCreatorChange = useCallback(value => {
     setCreator(value);
@@ -207,6 +238,9 @@ function Issues({ initialIssues, labels, owner, name }) {
 
 Issues.getInitialProps = async ({ ctx }) => {
   const { owner, name } = ctx.query;
+
+  const full_name = `${owner}/${name}`
+
   const fetchs = await Promise.all([
     await api.request(
       {
@@ -215,7 +249,9 @@ Issues.getInitialProps = async ({ ctx }) => {
       ctx.req,
       ctx.res
     ),
-    await api.request(
+    CACHE[full_name] 
+    ? Promise.resolve({data:CACHE[full_name]}) 
+    : await api.request(
       {
         url: `/repos/${owner}/${name}/labels`
       },
